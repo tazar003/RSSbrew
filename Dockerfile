@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y cron
 
 WORKDIR /app
 
+# Create the logs directory
+RUN mkdir -p /app/logs
+
 RUN pip install --upgrade pip
 
 COPY requirements.txt /app/
