@@ -221,8 +221,9 @@ from huey import RedisHuey
 
 HUEY = RedisHuey(
     'rssbrew-huey',
-    host=os.getenv('REDIS_HOST'), # Redis server hostname, docker service name
-    port=6379,
+    host=os.getenv('REDIS_HOST'),  # Fetch the host from environment variable
+    port=int(os.getenv('REDIS_PORT', 6379)),  # Fetch the port from environment variable
+    password=os.getenv('REDIS_PASSWORD'),  # Fetch the password from environment variable
     result_store=True,
     events=True,
     store_none=False,
