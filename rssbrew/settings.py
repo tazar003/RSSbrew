@@ -221,7 +221,7 @@ from huey import RedisHuey
 
 HUEY = RedisHuey(
     'rssbrew-huey',
-    host='redis', # Redis server hostname, docker service name
+    host='REDIS_HOST', # Redis server hostname, docker service name
     port=6379,
     result_store=True,
     events=True,
