@@ -21,7 +21,7 @@ COPY requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN mkdir /app/data /app/logs
+RUN mkdir -p /app/data /app/logs
 
 COPY . /app/
 
