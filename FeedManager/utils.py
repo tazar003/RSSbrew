@@ -144,18 +144,21 @@ def passes_filters(entry, processed_feed, filter_type):
         return not any(group_results)
 
 def match_content(entry, filter):
-    if filter.field == 'title':
-        content = generate_untitled(entry)
-    elif filter.field == 'content':
+    content = ''
+    if filter.field in ['title', 'title_or_content']:
+        content += generate_untitled(entry) + ' '
+    if filter.field in ['content', 'title_or_content']:
         try:
-            content = entry.content[0].value
+            content += entry.content[0].value + ' '
         except:
-            try: content = entry.description
-            except: content = entry.content
-
+            pass
+        try:
+            content += entry.description + ' '
+        except:
+            pass
     elif filter.field == 'link':
         content = entry.link
-    if not content:
+    if not content.strip(): # Strip is necessary for removing leading and trailing spaces
         return False
 
     if filter.match_type == 'contains':
@@ -194,8 +197,8 @@ def generate_summary(article, model, output_mode='HTML', prompt=None, other_mode
             truncated_query = clean_txt_and_truncate(article.content, model, clean_bool=True)
             #additional_prompt = f"Please summarize this article, and output the result only in JSON format. First item of the json is a one-line summary in 15 words named as 'summary_one_line', second item is the 150-word summary named as 'summary_long'. Output result in {language} language."
             messages = [
-                {"role": "system", "content": "You are a helpful assistant for summarizing articles, designed to output JSON format."},
-                {"role": "user", "content": f"{truncated_query}"},
+                {"role": "system", "content": "You are a helpful assistant for processing articles, designed to output JSON format."},
+                {"role": "user", "content": f"content: {truncated_query}, title: {article.title}"},
                 {"role": "assistant", "content": f"{prompt}"},
             ]
             completion_params["response_format"] = { "type": "json_object" }
@@ -203,7 +206,7 @@ def generate_summary(article, model, output_mode='HTML', prompt=None, other_mode
         elif output_mode == 'HTML':
             truncated_query = clean_txt_and_truncate(article.content, model, clean_bool=False)
             messages = [
-                {"role": "system", "content": "You are a helpful assistant for summarizing article content, designed to output pure and clean HTML format, do not code block the output using triple backticks."},
+                {"role": "system", "content": "You are a helpful assistant for processing article content, designed to output pure and clean HTML format, do not code block the output using triple backticks."},
                 {"role": "user", "content": f"{truncated_query}"},
                 {"role": "assistant", "content": f"{prompt}"},
             ]

@@ -46,6 +46,7 @@ class ProcessedFeed(models.Model):
     articles_to_summarize_per_interval = models.PositiveIntegerField(default=0, help_text="All articles will be included in the feed, but only the set number of articles will be summarized per update, set to 0 to disable summarization.", verbose_name="Articles to summarize per update")
     summary_language = models.CharField(max_length=20, default='English', help_text="Language for summarization, will be ignored if summarization is disabled or using custom prompt.")
     additional_prompt = models.TextField(blank=True, default='', verbose_name='Custom Prompt', help_text="This prompt will override the default prompt for summarization, you can use it for translation or other detailed instructions.")
+    translate_title = models.BooleanField(default=False, verbose_name="Article Title Translation", help_text="If this options is true, Article title is translated to summary language.")
     choices = [ 
         ('gpt-3.5-turbo', 'GPT-3.5 Turbo'),
         ('gpt-4-turbo', 'GPT-4 Turbo'),
@@ -115,6 +116,7 @@ class Filter(models.Model):
         ('title', 'Title'),
         ('content', 'Content'),
         ('link', 'Link'),
+        ('title_or_content', 'Title or content'),
     )
     MATCH_TYPE_CHOICES = (
         ('contains', 'Contains'),
@@ -125,7 +127,7 @@ class Filter(models.Model):
         ('longer_than', 'Longer than'),
     )
     filter_group = models.ForeignKey(FilterGroup, on_delete=models.CASCADE, related_name='filters') #null=True, default=None)
-    field = models.CharField(max_length=15, choices=FIELD_CHOICES)
+    field = models.CharField(max_length=20, choices=FIELD_CHOICES)
     match_type = models.CharField(max_length=20, choices=MATCH_TYPE_CHOICES)
     value = models.TextField()
 

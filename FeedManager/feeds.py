@@ -5,6 +5,8 @@ from django.http import HttpResponseForbidden
 from .models import ProcessedFeed, Article, Filter, AppSetting
 from django.utils import timezone
 import re
+from django.urls import reverse
+from .models import AppSetting
 from .utils import passes_filters, match_content, generate_untitled, remove_control_characters
 
 class ProcessedAtomFeed(Feed):
@@ -26,11 +28,20 @@ class ProcessedAtomFeed(Feed):
         return obj.name
 
     def link(self, obj):
-        return f"/feeds/{obj.id}/"
+        #url = reverse('processed_feed_by_id', args=[obj.id])
+        #url = f"/feeds/{obj.name}/"
+        url = reverse('processed_feed_by_name', args=[obj.name])
+        auth_code = AppSetting.get_auth_code()  # Get the universal auth code
+        if not auth_code:
+            return url
+        return f"{url}?key={auth_code}"
+    
+    def feed_url(self, obj):
+        return self.link(obj)
 
     def description(self, obj):
         original_feeds = ', '.join([feed.url for feed in obj.feeds.all()])
-        return f"Processed feed combining these original feeds: {original_feeds}, with {obj.filter_groups.count()} filter groups"
+        return f"Processed feed combining these original feeds: {original_feeds}, with {obj.filter_groups.count()} filter groups. All rights of the content belong to the original authors."
 
 
     def items(self, obj):

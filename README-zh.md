@@ -13,6 +13,18 @@ Telegram 讨论群：[RSSBrew](https://t.me/rssbrew)
 
 ⚠️ 此项目仍在开发中。当前版本可能包含错误或未完成的功能。请在 issues 或者 telegram 群里报告遇到的任何问题。欢迎提供建议和贡献。完整文档正在进行中，请暂时参考[我博客中的介绍](https://yinan.me/rssbrew-config)。
 
+### 示例订阅源
+
+https://public.rssbrew.com/feeds/HN%20comments/
+
+## 演示
+
+https://demo.rssbrew.com
+
+username: `admin`
+
+password: `changeme` (数据每周会重置，请不要保存重要数据和使用后修改密码)
+
 ## 特性
 
 ### 1. 自定义过滤器
@@ -31,7 +43,7 @@ Telegram 讨论群：[RSSBrew](https://t.me/rssbrew)
 
 ### 3. 文章摘要
 
-使用 AI（目前支持 GPT-3.5 Turbo、GPT-4 Turbo 或 GPT-4，更多计划中）生成摘要并将其添加到文章前面。默认摘要包括一行摘要和稍长的摘要。你还可以自定义提示以将 AI 用于其他目的。
+使用 AI（目前支持所有 OpenAI 兼容的模型）生成摘要并将其添加到文章前面。默认摘要包括一行摘要和稍长的摘要。你还可以自定义提示以将 AI 用于其他目的。
 
 ### 4. AI 生成摘要
 
@@ -41,7 +53,7 @@ Telegram 讨论群：[RSSBrew](https://t.me/rssbrew)
 
 ## 安装
 
-支持 Docker 部署或常规安装，请参阅 [INSTALL.md](INSTALL.md)。
+Docker 部署，请参阅 [INSTALL.md](INSTALL.md)。
 
 ## 许可证
 
@@ -51,7 +63,7 @@ Telegram 讨论群：[RSSBrew](https://t.me/rssbrew)
 
 如果你发现此项目有帮助，请考虑 star 这个项目或通过捐赠作者来支持开发。
 
-- [爱发电](https://afdian.net/a/yinanc)
+- [爱发电](https://afdian.com/a/yinanc)
 
 - [Buy Me A Coffee](https://www.buymeacoffee.com/yinan)
 

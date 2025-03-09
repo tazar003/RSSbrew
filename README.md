@@ -11,6 +11,18 @@ Telegram Discussion Group: [RSSBrew](https://t.me/rssbrew)
 
 ⚠️This project is still under development. The current version may contain bugs or incomplete features. Please report any issues you encounter. Suggestions and contributions are welcome. Documentation in progress. For now, please refer to [an intro in my blog](https://yinan.me/rssbrew-config).
 
+### Example Feeds
+
+https://public.rssbrew.com/feeds/HN%20comments/
+
+## Demo
+
+https://demo.rssbrew.com
+
+username: `admin`
+
+password: `changeme` (data will be reset weekly, please do not save important data and change password after use)
+
 ## Features
 
 ### 1. Custom Filters
@@ -24,7 +36,7 @@ Besides:
 Easily combine multiple RSS feeds into a single processed feed, even more powerful when used with custom filters.
 
 ### 3. Article Summarization
-Using AI (currently supports GPT-3.5 Turbo, GPT-4 Turbo or GPT-4o, more planned) to generate and prepend a summary to the article. The default summaries include a one-line summary and a slightly longer summary. You can also customize your prompt to use AI for other purposes.
+Using AI (currently supports all OpenAI compatible models via user configuration) to generate and prepend a summary to the article. The default summaries include a one-line summary and a slightly longer summary. You can also customize your prompt to use AI for other purposes.
   
 ### 4. Digests with AI
 
@@ -33,7 +45,7 @@ You can optionally choose what to include in the digest (e.g. content, summary, 
 
 ## INSTALL
 
-Docker deployment or regular installation supported, please refer to [INSTALL.md](INSTALL.md).
+Docker deployment, please refer to [INSTALL.md](INSTALL.md).
 
 ## LICENSE
 
@@ -45,6 +57,6 @@ If you find this project helpful, please consider leaving a star or supporting t
 
 - [Buy Me A Coffee](https://www.buymeacoffee.com/yinan)
 
-- [afdian](https://afdian.net/a/yinanc)
+- [afdian](https://afdian.com/a/yinanc)
 
 We would greatly appreciate your support to keep this project going.
