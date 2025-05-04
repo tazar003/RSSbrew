@@ -28,18 +28,15 @@ def clean_url(url):
     # 重新构建查询字符串
     new_query = urlencode(query_params, doseq=True)
     
-    # 重建 URL，包括新的查询字符串，不包括片段
+    # 重建 URL，只将域名部分转为小写，保持路径的原始大小写
     clean_url = urlunparse((
         parsed_url.scheme,
-        parsed_url.netloc,
-        parsed_url.path.rstrip('/'),
+        parsed_url.netloc.lower(),  # 只对域名部分转小写
+        parsed_url.path.rstrip('/'),  # 保持路径大小写
         '',
         new_query,
         ''
     ))
-    
-    # 转换为小写
-    clean_url = clean_url.lower()
     
     # 如果清理后的 URL 以 '?' 结尾，则移除它
     if clean_url.endswith('?'):
@@ -122,7 +119,7 @@ def passes_filters(entry, processed_feed, filter_type):
     group_results = []
     for group in groups:
         filters = group.filters.all()
-        results = [match_content(entry, filter) for filter in filters]
+        results = [match_content(entry, filter, processed_feed.case_sensitive) for filter in filters]
         logger.debug(f'  Results for group {group.usage}: {results} for {entry.title} {entry.link}')
         if group.relational_operator == 'all':
             group_results.append(all(results))
@@ -143,7 +140,7 @@ def passes_filters(entry, processed_feed, filter_type):
     elif group_relational_operator == 'none':
         return not any(group_results)
 
-def match_content(entry, filter):
+def match_content(entry, filter, case_sensitive=False):
     content = ''
     if filter.field in ['title', 'title_or_content']:
         content += generate_untitled(entry) + ' '
@@ -158,22 +155,32 @@ def match_content(entry, filter):
             pass
     elif filter.field == 'link':
         content = entry.link
-    if not content.strip(): # Strip is necessary for removing leading and trailing spaces
+    if not content.strip():  # Strip is necessary for removing leading and trailing spaces
         return False
 
-    if filter.match_type == 'contains':
-        return filter.value in content
-    elif filter.match_type == 'does_not_contain':
-        return filter.value not in content
-    elif filter.match_type == 'matches_regex':
-        return re.search(filter.value, content) is not None
-    elif filter.match_type == 'does_not_match_regex':
-        return re.search(filter.value, content) is None
-    elif filter.match_type == 'shorter_than':
-        return len(content) < int(filter.value)
-    elif filter.match_type == 'longer_than':
-        return len(content) > int(filter.value)
+    # Get the filter value for comparison
+    filter_value = filter.value
+    
+    # If not case sensitive, convert both content and filter value to lowercase
+    if not case_sensitive:
+        content = content.lower()
+        filter_value = filter_value.lower()
 
+    if filter.match_type == 'contains':
+        return filter_value in content
+    elif filter.match_type == 'does_not_contain':
+        return filter_value not in content
+    elif filter.match_type == 'matches_regex':
+        # Add re.IGNORECASE flag if not case sensitive
+        flags = 0 if case_sensitive else re.IGNORECASE
+        return re.search(filter_value, content, flags=flags) is not None
+    elif filter.match_type == 'does_not_match_regex':
+        flags = 0 if case_sensitive else re.IGNORECASE
+        return re.search(filter_value, content, flags=flags) is None
+    elif filter.match_type == 'shorter_than':
+        return len(content) < int(filter_value)
+    elif filter.match_type == 'longer_than':
+        return len(content) > int(filter_value)
 
 def generate_summary(article, model, output_mode='HTML', prompt=None, other_model=''):
     if model == 'other':
@@ -193,7 +200,14 @@ def generate_summary(article, model, output_mode='HTML', prompt=None, other_mode
             client_params["http_client"] = httpx.Client(proxy=OPENAI_PROXY)
 
         client = OpenAI(**client_params)
-        if output_mode == 'json':
+        if output_mode == 'translate':
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant for translating text."},
+                {"role": "user", "content": f"{article.title}"},
+                {"role": "assistant", "content": f"{prompt}"},
+            ]
+            completion_params["messages"] = messages
+        elif output_mode == 'json':
             truncated_query = clean_txt_and_truncate(article.content, model, clean_bool=True)
             #additional_prompt = f"Please summarize this article, and output the result only in JSON format. First item of the json is a one-line summary in 15 words named as 'summary_one_line', second item is the 150-word summary named as 'summary_long'. Output result in {language} language."
             messages = [
